@@ -30,6 +30,7 @@ module Kitchen
       default_config :client_rb, {}
       default_config :ruby_bindir, "/opt/chef/embedded/bin"
       default_config :json_attributes, true
+      default_config :start_chef_zero, true
 
       def create_sandbox
         super
@@ -69,7 +70,14 @@ module Kitchen
         end
 
         if local_mode_supported?
-          ["#{sudo('chef-client')} -z"].concat(args).join(" ")
+          puts config
+          if config[:start_chef_zero]
+            puts "Start Chef Zero ENABLED **********************************************"
+            ["#{sudo('chef-client')} -z"].concat(args).join(" ")
+          else
+            puts "Start Chef Zero DISABLED *********************************************"
+            ["#{sudo('chef-client')}"].concat(args).join(" ")
+          end
         else
           [
             chef_client_zero_env,
